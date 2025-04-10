@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Keiron Coolen COMP 272 Section 001
  *
  *   This java file contains the problem solutions for the methods selectionSort,
  *   mergeSortDivisibleByKFirst, asteroidsDestroyed, and numRescueCanoes methods.
@@ -37,11 +37,31 @@ public class ProblemSolutions {
         int n = values.length;
 
         for (int i = 0; i < n - 1; i++) {
-
             // YOU CODE GOES HERE -- COMPLETE THE INNER LOOP OF THIS
             // "SELECTION SORT" ALGORITHM.
             // DO NOT FORGET TO ADD YOUR NAME / SECTION ABOVE
 
+            /*
+             * The loop is used to find either the minimum or the maximum element
+             * The elements are compared based on their order
+             * The minimum index is upated based on the element found
+             */
+            int minimum_index = i;
+            for (int j = i +1;j < n;j++) {
+                if ((ascending && values[j] < values[minimum_index]) || (!ascending && values[j] > values[minimum_index])) {
+                    minimum_index = j;
+                }
+            }
+
+            /*
+             * If the minimum index is not in the right index, it is swapped
+             * The elements at i and "minimum_index" are swapped
+             */
+            if (minimum_index != i) {
+                int temp = values[i];
+                values[i] = values[minimum_index];
+                values[minimum_index] = temp;
+            }
         }
 
     } // End class selectionSort
@@ -102,8 +122,71 @@ public class ProblemSolutions {
         // TO CODE WITH A SPACE COMPLEXITY OF O(N LOG N), WHICH IS FINE FOR PURPOSES
         // OF THIS PROGRAMMING EXERCISES.
 
-        return;
+        /*
+         * A temporary array is used to store the merged results
+         * Two pointers are used for the subarrays
+         */
+        int[] temp = new int[right - left + 1];
+        int i = left;
+        int j = mid + 1;
+        int index = 0;
 
+        /*
+         * Check whether the element from the left and right side is divisible by k
+         * If both are divisible by k, the left is added first
+         * Else if only the left sided element is divisible, the left element is added
+         * Else if only the right sided element is divisible, the right element is added
+         * Otherwise the loop breaks
+         */
+        while (i <= mid && j <= right) {
+            boolean iDivisible = arr[i] % k == 0;
+            boolean jDivisble = arr[j] % k == 0;
+
+            if (iDivisible && jDivisble) {
+                temp[index++] = arr[i++];
+            } else if (iDivisible) {
+                temp[index++] = arr[i++];
+            } else if (jDivisble) {
+                temp[index++] = arr[j++];
+            } else {
+                break; 
+            }
+        }
+
+        // The remaining divisible elements from the left are added
+        while (i <= mid && arr[i] % k == 0) {
+            temp[index++] = arr[i++];
+        }
+
+        // The remaining divisible elements from the right are added
+        while (j <= right && arr[j] % k == 0) {
+            temp[index++] = arr[j++];
+        }
+
+        // The non-divisible numbers are merged together
+        while (i <= mid && j <= right) {
+            if (arr[i] <= arr[j]) {
+                temp[index++] = arr[i++];
+            } else {
+                temp[index++] = arr[j++];
+            }
+        }
+
+        /**
+         * The remaining non-divisible elements from the left and right side are added
+         */
+        while (i <= mid) {
+            temp[index++] = arr[i++];
+        }
+        while (j <= right) {
+            temp[index++] = arr[j++];
+        }
+
+        // The new array is restored with contents of the temporary array
+        for (int x = 0; x < temp.length; x++) {
+            arr[left + x] = temp[x];
+        }
+        return;
     }
 
 
@@ -156,8 +239,23 @@ public class ProblemSolutions {
 
         // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT()
 
-        return false;
-
+        // Sort the array in ascending order
+        Arrays.sort(asteroids);
+        /*
+         * Check each asterooid in the array
+         * If the mass is greater or equal to the mass of the asteroid,
+         * The asteroid mass is added to the current mass
+         * Else, the mass is not enough to destroy the asteroid and false is returned
+         */
+        for (int asteroid  = 0;asteroid < asteroids.length;asteroid++) {
+            if (mass >= asteroids[asteroid]) {
+                mass += asteroids[asteroid];
+            } else {
+                return false;
+            }
+        }
+        // Return true when all the asteroids are destroyed
+        return true;
     }
 
 
@@ -194,7 +292,37 @@ public class ProblemSolutions {
 
         // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT
 
-        return -1;
+        // Sort the array from the lightest to the heaviest person
+        Arrays.sort(people);
+
+        /*
+         * Two pointers left and right are used as trackers at the start and the end of the array
+         * A variable is used to count the sleds
+         */
+        int left = 0;
+        int right = people.length-1;
+        int countSled = 0;
+
+        /*
+         * The loop runs until the two pointers are next or equal to each other
+         * Check if pair of lightest and heaviest does not exceed the weight limit
+         * If they can be paired, both pointers move towards each other
+         * Else they will not be paired and the right pointer will move inwards
+         * The count for sleds is incremented for a successful pair
+         */
+        while (left <= right) {
+            if (people[left] + people[right] <= limit) {
+                left++;
+                right--;
+            }
+            else {
+                right--;
+            }
+            countSled++;
+        }
+
+        // The count for sleds is returned
+        return countSled;
 
     }
 
